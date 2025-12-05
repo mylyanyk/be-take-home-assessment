@@ -12,9 +12,15 @@ class WishlistViewSet(ModelViewSet):
     serializer_class = WishlistSerializer
     queryset = WishlistModel.objects.all()
 
-    @action(detail=False, methods=['get'], url_path='all_movies/(?P<customer_id>[^/.]+)')
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='all_movies/(?P<customer_id>[^/.]+)',
+    )
     def all_movies(self, request, customer_id=None):
-        wishlists = WishlistModel.objects.filter(customer_id=customer_id).select_related('movie')
+        wishlists = WishlistModel.objects.filter(
+            customer_id=customer_id
+        ).select_related('movie')
         movies = [wishlist.movie for wishlist in wishlists]
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
